@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- cache-bust: bump ?v when any UI/research or UI/common JS/CSS changes,
+         so the browser always refetches the latest instead of running a stale
+         cached reader.js (which causes "rendered + raw-LaTeX at once"). -->
+    <title>机器人导航论文精析 · The PaperReading for Robotics</title>
+    <link rel="stylesheet" href="UI/common/styles/ui-base.css?v=20260828p" />
+    <!-- KaTeX for math: vendored locally, loaded synchronously so it is ready
+         BEFORE the non-defer body scripts run (avoids the first-article raw-LaTeX
+         race). CDN fallback via onerror. -->
+    <link rel="stylesheet" href="UI/research/vendor/katex/katex.min.css?v=20260828p" />
+    <script src="UI/research/vendor/katex/katex.min.js?v=20260828p"
+      onerror="var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js';document.head.appendChild(s);var l=document.createElement('link');l.rel='stylesheet';l.href='https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css';document.head.appendChild(l);"></script>
+    <!-- PDF.js (vendored) for inline PDF rendering without triggering a download -->
+    <script src="UI/research/vendor/pdfjs/pdf.min.js?v=20260828p"></script>
+  </head>
+  <body>
+    <research-app></research-app>
+
+    <!-- STANDARD LOAD ORDER: common/standard → common/shared → common/components → <type>/manifest → <type>/components → app -->
+    <script src="UI/common/page-standard.js?v=20260828p"></script>
+    <script src="UI/common/shared.js?v=20260828p"></script>
+    <script>window.initTheme();</script>
+    <script src="UI/common/components/theme-toggle.js?v=20260828p"></script>
+    <script src="UI/common/components/standard-nav.js?v=20260828p"></script>
+    <script src="UI/research/manifest.js?v=20260828p"></script>
+    <script src="UI/research/components/reader.js?v=20260828p"></script>
+    <script src="UI/research/components/app.js?v=20260828p"></script>
+  </body>
+</html>

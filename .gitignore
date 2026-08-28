@@ -1,0 +1,5 @@
+# WorkBuddy automation runtime state (local only)
+*/.workbuddy
+.workbuddy
+preferences_weekly.md
+preferences_monthly.md
