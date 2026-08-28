@@ -45,23 +45,32 @@ class ResearchApp extends HTMLElement {
         .rbtn:hover{color:var(--text);background:var(--hover);}
         .brand h1{font-size:16px;}
         .count{color:var(--muted);font-size:12px;margin-left:8px;}
-        /* left sidebar owns its own collapse / expand controls */
+        /* left sidebar collapse / expand. When collapsed the sidebar fully
+           disappears (width:0) — no leftover rail/tail. A single toggle lives in
+           the TOPBAR (always visible on desktop, hidden ≤768px where the ☰ drawer
+           is used instead), so the control is reachable in BOTH states; a second
+           collapse button sits in the sidebar head for convenience while expanded. */
         .body{position:relative;}
         .sidebar{display:flex;flex-direction:column;min-width:0;transition:width .18s ease;}
         .sidebar-head{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;
           padding:10px 14px;border-bottom:1px solid var(--border);background:var(--panel);
-          color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.5px;}
+          color:var(--muted);font-size:12px;font-weight:700;letter-spacing:.5px;white-space:nowrap;overflow:hidden;}
         .sh-btn{appearance:none;border:1px solid var(--border);background:var(--panel2);color:var(--muted);
-          font-size:14px;font-weight:700;width:28px;height:28px;border-radius:7px;cursor:pointer;transition:.15s;}
+          font-size:18px;line-height:1;width:34px;height:34px;border-radius:8px;cursor:pointer;transition:.15s;
+          display:flex;align-items:center;justify-content:center;flex:none;}
         .sh-btn:hover{color:var(--text);background:var(--hover);}
-        .app.nav-collapsed .sidebar{width:0;min-width:0;overflow:hidden;border-right:none;}
-        /* floating expand tab, shown only while the sidebar is collapsed */
-        .nav-expand{display:none;position:absolute;left:0;top:16px;z-index:6;appearance:none;
-          border:1px solid var(--border);border-left:none;background:var(--panel);color:var(--muted);
-          font-size:15px;font-weight:700;width:24px;height:42px;border-radius:0 9px 9px 0;cursor:pointer;
-          align-items:center;justify-content:center;}
-        .nav-expand:hover{color:var(--text);background:var(--hover);}
-        .app.nav-collapsed .nav-expand{display:flex;}
+        /* top-bar expand control: HIDDEN while the nav is expanded, appears ONLY
+           when collapsed (desktop) so it never lingers as a leftover. It shows the
+           word 导航 (not a chevron). Mobile keeps the ☰ drawer instead. */
+        .nav-toggle{appearance:none;border:1px solid var(--border);background:var(--panel2);color:var(--muted);
+          font-size:13px;font-weight:600;line-height:1;height:30px;padding:0 11px;border-radius:7px;cursor:pointer;
+          transition:.15s;display:none;align-items:center;justify-content:center;flex:none;white-space:nowrap;}
+        .nav-toggle:hover{color:var(--text);background:var(--hover);}
+        @media (min-width:769px){
+          .app.nav-collapsed .sidebar{width:0;min-width:0;overflow:hidden;border-right:none;}
+          .app.nav-collapsed .nav-toggle{display:flex;}
+        }
+        @media (max-width:768px){ .nav-toggle{display:none;} }
       </style>
       <div class="app">
         <header class="topbar">
@@ -71,20 +80,20 @@ class ResearchApp extends HTMLElement {
             <h1>机器人导航论文精析</h1>
             <span class="count" id="count"></span>
           </div>
-          <div class="topright">
-            <div class="hint">← → 切换 · 滚轮阅读 · 对照阅读时导航与目录常驻</div>
+            <div class="topright">
+            <div class="hint">← → 切换 · 滚轮阅读 · 栏内 ‹ 收起左栏，收起后顶栏『导航』展开 · 对照阅读时导航自动收起</div>
             <div class="topbtns">
+              <button class="nav-toggle" id="navToggle" title="展开导航栏" aria-label="展开导航栏">导航</button>
               <theme-toggle></theme-toggle>
             </div>
           </div>
         </header>
         <div class="body">
           <div class="backdrop" id="backdrop"></div>
-          <button class="nav-expand" id="navExpand" title="展开左栏" aria-label="展开左栏">⟨</button>
           <aside class="sidebar">
             <div class="sidebar-head">
-              <span>导航</span>
-              <button class="sh-btn" id="navCollapse" title="收起左栏" aria-label="收起左栏">⟩</button>
+              <span class="sh-label">导航</span>
+              <button class="sh-btn" id="navCollapse" title="收起左栏" aria-label="收起左栏">‹</button>
             </div>
             <standard-nav id="nav"></standard-nav>
           </aside>
@@ -110,17 +119,21 @@ class ResearchApp extends HTMLElement {
       this._appEl.classList.toggle("nav-open"));
     this.shadowRoot.querySelector("#backdrop").addEventListener("click", () =>
       this._appEl.classList.remove("nav-open"));
-    // Left sidebar owns its own collapse / expand controls.
-    this.shadowRoot.querySelector("#navCollapse").addEventListener("click", () =>
-      this._setLeftCollapsed(true, true));
-    this.shadowRoot.querySelector("#navExpand").addEventListener("click", () =>
-      this._setLeftCollapsed(false, true));
+    // One collapse/expand toggle in the topbar (always visible on desktop),
+    // plus a second one in the sidebar head while expanded. Both flip state.
+    const onNavToggle = () => {
+      const collapsed = !this._appEl.classList.contains("nav-collapsed");
+      this._setLeftCollapsed(collapsed, true);
+    };
+    this.shadowRoot.querySelector("#navToggle").addEventListener("click", onNavToggle);
+    this.shadowRoot.querySelector("#navCollapse").addEventListener("click", onNavToggle);
 
-    // On entering dual reading we auto-collapse the LEFT nav so the PDF gets
-    // maximum width; the right-hand TOC stays visible (目录 coexists, on the
-    // right of the PDF pane). The full 导航栏-md栏-PDF栏-目录栏 four-column form
-    // is reached by clicking the left expand tab (⟨). On exit we restore the
-    // user's previous nav open/collapsed preference.
+    // On entering dual reading we auto-collapse the LEFT nav (fully, width:0)
+    // so the PDF gets maximum width; the right-hand TOC ALSO auto-collapses
+    // (handled inside <research-reader>'s enterDual), and its 目录 button
+    // brings it back. The full 导航栏-md栏-PDF栏-目录栏 form is reached by
+    // clicking the top-bar 导航 button plus the 目录 button. On exit we restore
+    // the user's previous nav open/collapsed preference.
     this.addEventListener("research-dual", (e) => {
       if (e.detail && e.detail.on) this._setLeftCollapsed(true, false);
       else this._setLeftCollapsed(!this._leftUserOpen, false);
@@ -160,6 +173,15 @@ class ResearchApp extends HTMLElement {
   _setLeftCollapsed(collapsed, remember) {
     if (remember !== false) this._leftUserOpen = !collapsed;
     this._appEl.classList.toggle("nav-collapsed", collapsed);
+    // The in-sidebar collapse button flips its chevron; the top-bar 导航 button
+    // is shown/hidden purely by CSS (visible only when collapsed) and keeps its
+    // static label, so no per-state text swap is needed there.
+    const btn = this.shadowRoot.querySelector("#navCollapse");
+    if (btn) {
+      btn.textContent = collapsed ? "›" : "‹";   // › expand (right) · ‹ collapse (left)
+      btn.title = collapsed ? "展开左栏" : "收起左栏";
+      btn.setAttribute("aria-label", btn.title);
+    }
   }
 
   onKey(e) {

@@ -257,7 +257,8 @@ class ResearchReader extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this._data = null;
     this.mode = "single";          // "single" | "dual"
-    this._tocUserOpen = true;      // user's preferred TOC state
+    this._tocUserOpen = true;      // user's preferred TOC state (persistent)
+    this._dualTocOpen = false;     // TOC open within the current dual session
   }
 
   connectedCallback() {
@@ -304,12 +305,17 @@ class ResearchReader extends HTMLElement {
         .pdf-head .rbtn{background:#525659;color:#e8eaed;border-color:#5f6368;padding:5px 12px;font-size:12px;}
         .pdf-head .rbtn:hover{background:#5f6368;color:#fff;}
         .pdf-canvas-wrap{flex:1;overflow:auto;background:#fff;padding:8px;}
-        .pdf-page{display:block;margin:0 auto 10px;width:100%;height:auto;box-shadow:0 1px 5px rgba(0,0,0,.35);}
+        /* The canvas is rendered at a comfortable reading scale and at the
+           screen's real pixel density (DPR), then displayed at its NATURAL
+           logical size — NOT stretched to 100% of the column (which shrank a
+           low-res canvas into illegible text). The pane scrolls instead. */
+        .pdf-page{display:block;margin:0 auto 10px;max-width:none;box-shadow:0 1px 5px rgba(0,0,0,.35);}
         .pdf-msg{padding:40px 18px;color:#444;text-align:center;font-size:13px;line-height:1.7;}
         .pdf-msg.pdf-err{color:#c0392b;}
-        /* dual mode: keep TOC visible so nav | md | pdf | toc all coexist */
+        /* dual mode: TOC auto-collapses (see enterDual) so md | pdf get max
+           width; the user can still bring it back with the 目录 button. */
         .rbody.dual .doc{flex:1;}
-        /* TOC collapsed only via manual toggle */
+        /* TOC hidden whenever .toc-collapsed is set (dual auto-collapse or manual toggle) */
         :host(.toc-collapsed) .toc{display:none;}
         /* article typography additions */
         .attrib{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;
@@ -351,6 +357,8 @@ class ResearchReader extends HTMLElement {
           <div class="pdf-head">
             <span>原文 PDF</span>
             <div class="pdf-acts">
+              <button class="rbtn" id="btnZoomOut" title="缩小">－</button>
+              <button class="rbtn" id="btnZoomIn" title="放大">＋</button>
               <button class="rbtn" id="btnDl">下载</button>
               <button class="rbtn" id="btnExit">退出对照</button>
             </div>
@@ -374,6 +382,8 @@ class ResearchReader extends HTMLElement {
     this._btnToc = this.shadowRoot.getElementById("btnToc");
     this._btnExit = this.shadowRoot.getElementById("btnExit");
     this._btnDl = this.shadowRoot.getElementById("btnDl");
+    this._btnZoomIn = this.shadowRoot.getElementById("btnZoomIn");
+    this._btnZoomOut = this.shadowRoot.getElementById("btnZoomOut");
 
     this._btnPdf.addEventListener("click", () => {
       if (this.mode === "dual") this.exitDual();
@@ -381,8 +391,13 @@ class ResearchReader extends HTMLElement {
     });
     this._btnExit.addEventListener("click", () => this.exitDual());
     this._btnDl.addEventListener("click", () => this._downloadPdf());
+    this._btnZoomIn.addEventListener("click", () => this._zoomPdf(1.25));
+    this._btnZoomOut.addEventListener("click", () => this._zoomPdf(0.8));
     this._btnToc.addEventListener("click", () => this.toggleToc());
     this._doc.addEventListener("scroll", () => this._syncTOC(), { passive: true });
+    // Re-fit the PDF to the pane width when the window resizes (debounced).
+    this._onResize = this._onResize.bind(this);
+    window.addEventListener("resize", this._onResize);
     this._applyTocState();
   }
 
@@ -402,6 +417,8 @@ class ResearchReader extends HTMLElement {
     this._pdfpane.hidden = true;
     this._pdfWrap.innerHTML = "";
     this._pdfUrl = null;
+    this._pdfDoc = null;
+    this._pdfScale = 1;          // reset zoom to fit-to-width for the new article
     this._doc.innerHTML = '<div class="loading">加载中…</div>';
     window.RData.getText(data.base + data.file).then((md) => {
       this._renderBody(md, title, meta);
@@ -489,9 +506,17 @@ class ResearchReader extends HTMLElement {
     if (!d || !d.pdf) return;
     this.mode = "dual";
     this._pdfUrl = d.pdf;
+    this._pdfScale = 1;           // 1 = fit-to-width; user can zoom via ＋/－
+    this._pdfDoc = null;
     this._pdfpane.hidden = false;
     this._rbody.classList.add("dual");
-    // TOC stays visible (nav | md | pdf | toc); left nav is NOT auto-collapsed.
+    // In dual mode the left nav collapses (via the research-dual event caught
+    // by <research-app>) AND the right-hand TOC auto-collapses too, so md |
+    // pdf get maximum width. The user can still bring the TOC back with the
+    // 目录 button — that choice is tracked in _dualTocOpen and does NOT
+    // overwrite the persistent _tocUserOpen preference used in single mode.
+    this._dualTocOpen = false;
+    this._setTocCollapsed(true);
     this._updatePdfBtn();
     this.dispatchEvent(new CustomEvent("research-dual", { bubbles: true, composed: true, detail: { on: true } }));
     this._renderPdf();
@@ -506,22 +531,58 @@ class ResearchReader extends HTMLElement {
       const res = await fetch(this._pdfUrl);
       if (!res.ok) throw new Error("HTTP " + res.status);
       const buf = await res.arrayBuffer();
-      const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
-      this._pdfWrap.innerHTML = "";
-      const scale = 1.15;
-      for (let p = 1; p <= pdf.numPages; p++) {
-        const page = await pdf.getPage(p);
-        const viewport = page.getViewport({ scale });
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.floor(viewport.width);
-        canvas.height = Math.floor(viewport.height);
-        canvas.className = "pdf-page";
-        this._pdfWrap.appendChild(canvas);
-        await page.render({ canvasContext: canvas.getContext("2d"), viewport }).promise;
-      }
+      this._pdfDoc = await window.pdfjsLib.getDocument({ data: buf }).promise;
+      await this._renderPdfPages();
     } catch (e) {
       this._pdfWrap.innerHTML = '<div class="pdf-msg pdf-err">PDF 渲染失败：' + escR(String(e)) + '</div>';
     }
+  }
+
+  // Render every page so it FITS the pane width (adapts to the window), while
+  // keeping the full page content and DPR-sharp text. `_pdfScale` is a user
+  // zoom multiplier (1 = fit); each page's own width is measured so the fit is
+  // exact even for mixed-size pages. The canvas backing store is sized at the
+  // screen's device-pixel-ratio (DPR) so text stays crisp; the canvas is
+  // displayed at its logical (CSS) size — never a blurry stretch.
+  async _renderPdfPages() {
+    if (!this._pdfDoc) return;
+    const pdf = this._pdfDoc;
+    const dpr = window.devicePixelRatio || 1;
+    const userZoom = this._pdfScale || 1;                 // 1 = fit-to-width
+    const wrapW = (this._pdfWrap.clientWidth || 600) - 16; // minus padding
+    this._pdfWrap.innerHTML = "";
+    for (let p = 1; p <= pdf.numPages; p++) {
+      const page = await pdf.getPage(p);
+      // Fit this page's width to the pane, then apply the user zoom factor.
+      const baseVp = page.getViewport({ scale: 1 });
+      const scale = (wrapW / baseVp.width) * userZoom;
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement("canvas");
+      canvas.className = "pdf-page";
+      // High-resolution backing store for sharp text…
+      canvas.width = Math.floor(viewport.width * dpr);
+      canvas.height = Math.floor(viewport.height * dpr);
+      // …displayed at the logical (CSS) size so the page fits the pane exactly.
+      canvas.style.width = Math.floor(viewport.width) + "px";
+      canvas.style.height = Math.floor(viewport.height) + "px";
+      this._pdfWrap.appendChild(canvas);
+      const ctx = canvas.getContext("2d");
+      const renderCtx = { canvasContext: ctx, viewport };
+      if (dpr !== 1) renderCtx.transform = [dpr, 0, 0, dpr, 0, 0];
+      await page.render(renderCtx).promise;
+    }
+  }
+
+  _onResize() {
+    if (this.mode !== "dual" || !this._pdfDoc) return;
+    clearTimeout(this._resizeT);
+    this._resizeT = setTimeout(() => this._renderPdfPages(), 200);
+  }
+
+  async _zoomPdf(factor) {
+    if (!this._pdfDoc) return;
+    this._pdfScale = Math.min(4, Math.max(0.5, (this._pdfScale || 1.5) * factor));
+    await this._renderPdfPages();
   }
 
   async _downloadPdf() {
@@ -555,14 +616,24 @@ class ResearchReader extends HTMLElement {
     this._pdfpane.hidden = true;
     this._pdfWrap.innerHTML = "";
     this._pdfUrl = null;
+    this._pdfDoc = null;
     this._rbody.classList.remove("dual");
+    // Restore the TOC to the user's persistent preference. The dual session may
+    // have toggled _dualTocOpen (via the 目录 button) without touching
+    // _tocUserOpen, so we read the latter to reset correctly.
+    this._setTocCollapsed(!this._tocUserOpen);
     this._updatePdfBtn();
     this.dispatchEvent(new CustomEvent("research-dual", { bubbles: true, composed: true, detail: { on: false } }));
   }
 
   toggleToc() {
-    this._tocUserOpen = !this._tocUserOpen;
-    this._setTocCollapsed(!this._tocUserOpen);
+    if (this.mode === "dual") {
+      this._dualTocOpen = !this._dualTocOpen;
+      this._setTocCollapsed(!this._dualTocOpen);
+    } else {
+      this._tocUserOpen = !this._tocUserOpen;
+      this._setTocCollapsed(!this._tocUserOpen);
+    }
   }
 
   _setTocCollapsed(collapsed) {
