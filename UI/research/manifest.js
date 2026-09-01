@@ -62,83 +62,6 @@ window.RData = {
     "open": 1,
     "children": [
       {
-        "label": "2026-08-24",
-        "open": 0,
-        "children": [
-          {
-            "label": "总览",
-            "data": {
-              "sec": "weekly",
-              "kind": "overview",
-              "base": "weekly/20260824/",
-              "file": "weekly_overview.md",
-              "pdf": null,
-              "meta": {
-                "标题": "周刊精粹·2026-08-24 期",
-                "来源": "本刊合集",
-                "团队": "—",
-                "子方向": "—",
-                "评分": "本刊自动精析"
-              }
-            }
-          },
-          {
-            "label": "GeoGS-SLAM",
-            "badge": "PDF",
-            "data": {
-              "sec": "weekly",
-              "kind": "piece",
-              "base": "weekly/20260824/",
-              "file": "01_GeoGS_SLAM.md",
-              "pdf": "weekly/20260824/2607.07452.pdf",
-              "meta": {
-                "标题": "GeoGS-SLAM",
-                "来源": "arXiv:2607.07452",
-                "团队": "北京航空航天大学",
-                "子方向": "单目稠密SLAM（视觉SLAM）",
-                "评分": "本刊自动精析"
-              }
-            }
-          },
-          {
-            "label": "VIP",
-            "badge": "PDF",
-            "data": {
-              "sec": "weekly",
-              "kind": "piece",
-              "base": "weekly/20260824/",
-              "file": "02_VIP.md",
-              "pdf": "weekly/20260824/2608.23650.pdf",
-              "meta": {
-                "标题": "VIP",
-                "来源": "arXiv:2608.23650",
-                "团队": "北京航空航天大学（通讯作者全权）",
-                "子方向": "机器人导航规划",
-                "评分": "本刊自动精析"
-              }
-            }
-          },
-          {
-            "label": "Concept-Guided Exploration",
-            "badge": "PDF",
-            "data": {
-              "sec": "weekly",
-              "kind": "piece",
-              "base": "weekly/20260824/",
-              "file": "03_Concept_Guided_Exploration.md",
-              "pdf": "weekly/20260824/2608.24618.pdf",
-              "meta": {
-                "标题": "Concept-Guided Exploration",
-                "来源": "arXiv:2608.24618",
-                "团队": "埃斯特雷马杜拉大学 RoboLab",
-                "子方向": "探索感知（场景图）",
-                "评分": "本刊自动精析"
-              }
-            }
-          }
-        ]
-      },
-      {
         "label": "2026-08-31",
         "open": 0,
         "children": [
@@ -160,55 +83,55 @@ window.RData = {
             }
           },
           {
-            "label": "TAMP-Nav",
+            "label": "SGE",
             "badge": "PDF",
             "data": {
               "sec": "weekly",
               "kind": "piece",
               "base": "weekly/20260831/",
-              "file": "01_TAMP_Nav.md",
-              "pdf": "weekly/20260831/2608.17512.pdf",
+              "file": "01_SGE.md",
+              "pdf": "weekly/20260831/2608.29315.pdf",
               "meta": {
-                "标题": "TAMP-Nav",
-                "来源": "arXiv:2608.17512",
-                "团队": "浙江大学 OmniAI Group (ACES Lab)",
-                "子方向": "视觉语言导航",
+                "标题": "SGE",
+                "来源": "arXiv:2608.29315",
+                "团队": "West Virginia University (Tatsch & Gu)",
+                "子方向": "探索感知",
                 "评分": "本刊自动精析"
               }
             }
           },
           {
-            "label": "CrossTracer",
+            "label": "Failure or Drift?",
             "badge": "PDF",
             "data": {
               "sec": "weekly",
               "kind": "piece",
               "base": "weekly/20260831/",
-              "file": "02_CrossTracer.md",
-              "pdf": "weekly/20260831/2608.06688.pdf",
+              "file": "02_Failure_or_Drift.md",
+              "pdf": "weekly/20260831/2608.30690.pdf",
               "meta": {
-                "标题": "CrossTracer",
-                "来源": "arXiv:2608.06688",
-                "团队": "鹏城实验室 / 南方科技大学",
-                "子方向": "鲁棒部署（跨具身导航）",
+                "标题": "Failure or Drift?",
+                "来源": "arXiv:2608.30690",
+                "团队": "University of Mannheim (ML Group)",
+                "子方向": "SLAM",
                 "评分": "本刊自动精析"
               }
             }
           },
           {
-            "label": "HumanoidVLN",
+            "label": "Certified GCS Planning",
             "badge": "PDF",
             "data": {
               "sec": "weekly",
               "kind": "piece",
               "base": "weekly/20260831/",
-              "file": "03_HumanoidVLN.md",
-              "pdf": "weekly/20260831/2608.12860.pdf",
+              "file": "03_Certified_GCS.md",
+              "pdf": "weekly/20260831/2608.29770.pdf",
               "meta": {
-                "标题": "HumanoidVLN",
-                "来源": "arXiv:2608.12860",
-                "团队": "VinMotion (越南) / USC",
-                "子方向": "仿真基准",
+                "标题": "Certified GCS Planning",
+                "来源": "arXiv:2608.29770",
+                "团队": "TUM (Xie & Alanwar)",
+                "子方向": "规划",
                 "评分": "本刊自动精析"
               }
             }
@@ -221,47 +144,6 @@ window.RData = {
     "label": "月刊深析",
     "open": 1,
     "children": [
-      {
-        "label": "2026-08",
-        "open": 0,
-        "children": [
-          {
-            "label": "总览",
-            "data": {
-              "sec": "monthly",
-              "kind": "overview",
-              "base": "monthly/2026-08/",
-              "file": "monthly_overview.md",
-              "pdf": null,
-              "meta": {
-                "标题": "月刊深析 · 2026-08 期",
-                "来源": "",
-                "团队": "",
-                "子方向": "",
-                "评分": "本刊自动精析"
-              }
-            }
-          },
-          {
-            "label": "RRT*",
-            "badge": "PDF",
-            "data": {
-              "sec": "monthly",
-              "kind": "piece",
-              "base": "monthly/2026-08/",
-              "file": "01_RRT_Star.md",
-              "pdf": "monthly/2026-08/1105.1186.pdf",
-              "meta": {
-                "标题": "RRT*",
-                "来源": "arXiv:1105.1186",
-                "团队": "MIT LIDS（Sertac Karaman, Emilio Frazzoli）",
-                "子方向": "全局路径规划（采样规划）",
-                "评分": "本刊自动精析"
-              }
-            }
-          }
-        ]
-      },
       {
         "label": "2026-09",
         "open": 0,
@@ -284,19 +166,19 @@ window.RData = {
             }
           },
           {
-            "label": "LIO-SAM",
+            "label": "RRT*",
             "badge": "PDF",
             "data": {
               "sec": "monthly",
               "kind": "piece",
               "base": "monthly/2026-09/",
-              "file": "01_LIO-SAM.md",
-              "pdf": "monthly/2026-09/2007.00258.pdf",
+              "file": "01_RRTstar.md",
+              "pdf": "monthly/2026-09/1105.1186.pdf",
               "meta": {
-                "标题": "LIO-SAM",
-                "来源": "arXiv:2007.00258",
-                "团队": "MIT Senseable City Lab + CSAIL / Stevens（Tixiao Shan, Brendan Englot, Daniela Rus 等）",
-                "子方向": "激光惯性里程计（LIO）",
+                "标题": "RRT*",
+                "来源": "arXiv:1105.1186",
+                "团队": "MIT LIDS（Karaman & Frazzoli）",
+                "子方向": "采样规划",
                 "评分": "本刊自动精析"
               }
             }

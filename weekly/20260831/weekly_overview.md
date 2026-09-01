@@ -2,7 +2,9 @@
 
 # 周刊精粹 · 2026-08-31 期
 
-**本期主题**：像素接口与物理落地——VLM/VLA 导航从「会想」到「能走」　|　**日期范围**：2026-08-25 至 2026-08-31　|　**篇数**：3
+**本期主题**：自动广度选材（探索感知 / SLAM 鲁棒评测 / 采样规划与安全形式化）
+**日期范围**：2026-08-29 – 2026-08-31（arXiv 提交）
+**篇数**：3
 
 ---
 
@@ -10,17 +12,18 @@
 
 | 序号 | 英文标题 | 中文意译 | 子方向 |
 | --- | --- | --- | --- |
-| 01 | Embodied-Navigator: Point, Think, Memorize, and Align for Efficient Navigation (TAMP-Nav) | 指、想、记、合——高效具身导航统一框架 | 视觉语言导航 |
-| 02 | CrossTracer: Cross-Embodiment Navigation via VLA Model Reasoning and Trace Residuals Adapting | 跨具身导航：VLA 推理与轨迹残差自适应 | 鲁棒部署（跨具身导航） |
-| 03 | HumanoidVLN: A Physics-Grounded Simulator and Benchmark for Vision-Language Navigation Across Diverse Humanoid Embodiments | 面向多样人形具身的物理接地 VLN 仿真器与基准 | 仿真基准 |
+| 01 | SGE: Semantically-Guided Exploration for Unstructured Environments via Image-Space Waypoint Sampling | 非结构化环境的语义引导探索：图像空间路点采样 | 探索感知 |
+| 02 | Failure or Drift? Evaluating Monocular SLAM under Synthetic and Real-World Corruptions | 跟丢还是漂移：合成与真实腐蚀下的单目 SLAM 评测 | SLAM |
+| 03 | Sampling-based Certified Planning with Graphs of Convex Sets | 凸集图上的采样式认证规划 | 规划 |
 
 ## 编者按
 
-本期三篇凑成了一个耐人寻味的巧合：TAMP-Nav 让 VLM 只在图像上「指一个像素」，CrossTracer 把导航方案表示为归一化像素轨迹，HumanoidVLN 强调行走中相机抖动的自中心观测——三条路线不约而同地把「图像平面」选为基础模型语义与机器人物理之间的中立接口，仿佛在共同承认：让大模型直接输出控制量仍是奢侈品。但接口越靠前，欠下的物理债越多：TAMP-Nav 依赖深度相机与 SLAM 栈兜底、CrossTracer 的 2D 轨迹看不见悬空障碍、HumanoidVLN 则直接用 71% 的跌倒率给整个「SR 至上」的评测文化敲响警钟。三篇合读的启示是，VLM/VLA 导航的下一程不在更大的骨干网，而在「语义—几何—具身」三层的责任划分与各自的容错设计。
+本期三篇恰好构成一条「保证从何而来」的谱系：SGE 用经验权重与真机部署换取实用性但不给任何形式保证；Failure or Drift 揭示即便有完备评测协议，合成代理与真实条件之间仍存在能翻转架构选型的保真度缺口；Certified GCS 则走到底——把保证从输入假设（区域无碰）搬到输出答案（连续间隙证书），并证明输入侧修补（更严验收、SoS 认证、均匀收缩）在连通性面前全部失败。三篇的共同短板是评测或验证边界均依赖特定基准族（单一 KITTI 轨迹、单一 benchmark 环境、14-DOF 库构型），外推需谨慎。趋势判断：答案级/条件级认证（报告失效与漂移分离、只对交付物付保证）正在取代「输入侧假设可靠」的传统叙事，成为感知与规划系统可靠性的新范式。
 
 ---
 
-**随刊 PDF 与各篇精粹**：
+随刊 PDF（同目录）：
 
-- 论文原文：`weekly/20260831/2608.17512.pdf`、`weekly/20260831/2608.06688.pdf`、`weekly/20260831/2608.12860.pdf`
-- 各篇精粹：`weekly/20260831/01_TAMP_Nav.md`、`weekly/20260831/02_CrossTracer.md`、`weekly/20260831/03_HumanoidVLN.md`
+- `weekly/20260831/2608.29315.pdf`（SGE）
+- `weekly/20260831/2608.30690.pdf`（Failure or Drift）
+- `weekly/20260831/2608.29770.pdf`（Certified GCS）
