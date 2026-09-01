@@ -137,6 +137,83 @@ window.RData = {
             }
           }
         ]
+      },
+      {
+        "label": "2026-08-31",
+        "open": 0,
+        "children": [
+          {
+            "label": "总览",
+            "data": {
+              "sec": "weekly",
+              "kind": "overview",
+              "base": "weekly/20260831/",
+              "file": "weekly_overview.md",
+              "pdf": null,
+              "meta": {
+                "标题": "周刊精粹·2026-08-31 期",
+                "来源": "本刊合集",
+                "团队": "—",
+                "子方向": "—",
+                "评分": "本刊自动精析"
+              }
+            }
+          },
+          {
+            "label": "TAMP-Nav",
+            "badge": "PDF",
+            "data": {
+              "sec": "weekly",
+              "kind": "piece",
+              "base": "weekly/20260831/",
+              "file": "01_TAMP_Nav.md",
+              "pdf": "weekly/20260831/2608.17512.pdf",
+              "meta": {
+                "标题": "TAMP-Nav",
+                "来源": "arXiv:2608.17512",
+                "团队": "浙江大学 OmniAI Group (ACES Lab)",
+                "子方向": "视觉语言导航",
+                "评分": "本刊自动精析"
+              }
+            }
+          },
+          {
+            "label": "CrossTracer",
+            "badge": "PDF",
+            "data": {
+              "sec": "weekly",
+              "kind": "piece",
+              "base": "weekly/20260831/",
+              "file": "02_CrossTracer.md",
+              "pdf": "weekly/20260831/2608.06688.pdf",
+              "meta": {
+                "标题": "CrossTracer",
+                "来源": "arXiv:2608.06688",
+                "团队": "鹏城实验室 / 南方科技大学",
+                "子方向": "鲁棒部署（跨具身导航）",
+                "评分": "本刊自动精析"
+              }
+            }
+          },
+          {
+            "label": "HumanoidVLN",
+            "badge": "PDF",
+            "data": {
+              "sec": "weekly",
+              "kind": "piece",
+              "base": "weekly/20260831/",
+              "file": "03_HumanoidVLN.md",
+              "pdf": "weekly/20260831/2608.12860.pdf",
+              "meta": {
+                "标题": "HumanoidVLN",
+                "来源": "arXiv:2608.12860",
+                "团队": "VinMotion (越南) / USC",
+                "子方向": "仿真基准",
+                "评分": "本刊自动精析"
+              }
+            }
+          }
+        ]
       }
     ]
   },
@@ -181,6 +258,58 @@ window.RData = {
                 "子方向": "全局路径规划（采样规划）",
                 "评分": "本刊自动精析"
               }
+            }
+          }
+        ]
+      },
+      {
+        "label": "2026-09",
+        "open": 0,
+        "children": [
+          {
+            "label": "总览",
+            "data": {
+              "sec": "monthly",
+              "kind": "overview",
+              "base": "monthly/2026-09/",
+              "file": "monthly_overview.md",
+              "pdf": null,
+              "meta": {
+                "标题": "月刊深析 · 2026-09 期",
+                "来源": "",
+                "团队": "",
+                "子方向": "",
+                "评分": "本刊自动精析"
+              }
+            }
+          },
+          {
+            "label": "LIO-SAM",
+            "badge": "PDF",
+            "data": {
+              "sec": "monthly",
+              "kind": "piece",
+              "base": "monthly/2026-09/",
+              "file": "01_LIO-SAM.md",
+              "pdf": "monthly/2026-09/2007.00258.pdf",
+              "meta": {
+                "标题": "LIO-SAM",
+                "来源": "arXiv:2007.00258",
+                "团队": "MIT Senseable City Lab + CSAIL / Stevens（Tixiao Shan, Brendan Englot, Daniela Rus 等）",
+                "子方向": "激光惯性里程计（LIO）",
+                "评分": "本刊自动精析"
+              }
+            }
+          },
+          {
+            "label": "旁征博引",
+            "data": {
+              "sec": "monthly",
+              "kind": "refs",
+              "base": "monthly/2026-09/",
+              "file": "_refs.txt",
+              "pdf": null,
+              "meta": null
             }
           }
         ]
